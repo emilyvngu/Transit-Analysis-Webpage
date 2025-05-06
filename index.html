@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Boston Neighborhood Transit Friendliness</title>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="website.css">
+</head>
+
+<body>
+  <header>
+    <h1>Mapping Transit Friendliness in Boston Neighborhoods</h1>
+  </header>
+
+  <!-- INTRO -->
+  <div class="section">
+    <h2>Introduction</h2>
+    <p>
+      Walkability and accessible infrastructure are key factors in the quality of life for urban residents. Across the United States, a wide movement has been growing to advocate the importance of building more pedestrian and bike lanes, while limiting the access of cars in cities. Boston, ranked 4th in the nation for public transit usage, presents a compelling case for understanding the spatial distribution of sidewalks and bike paths. In order to understand whether Boston satisfies this transit demand, our project introduces a Transit Friendliness Index (TFI) to evaluate and visualize the accessibility of sidewalks and bike paths within each neighborhoods in Boston.
+    </p>
+  </div>
+
+  <!-- Data source -->
+  <div class="section">
+    <h2>Data Source</h2>
+    <p>
+      Source 1: Data.Boston.gov <br><a href="https://data.boston.gov/dataset/existing-bike-network-20221">Existing Bike Network Data</a>, <a href="https://data.boston.gov/dataset/bpda-neighborhood-boundaries">BPDA Neighborhood Boundaries</a><br><br>
+      Source 2: Mass.gov: <br><a href="https://gis.data.mass.gov/maps/boston::sidewalk-inventory/about">Sidewalk Inventory data dictionary</a><br><br>
+      The bike network data is a shp file of size 737 KB, while the sidewalk and boston neighborhood data are geojson files with size of 3.59 MB and 56.8 MB.
+      The bike network file contains attribute columns of street name, bike path length, and road inventory number. Its spatial column includes the geometry of each bike path, including its coordinates data to indicate the location.
+      Next, the boston neighborhood file contains attribute of the neighborhood name and the geometry, providing coordinates data for each neighborhood.
+      Lastly, the sidewalk file contains attribute of sidewalk type, length, and geometry (coordinates data).
+      
+    </p>
+  </div>
+
+  <!-- METHODOLOGY -->
+  <div class="section">
+    <h2>Methodology</h2>
+    <p>
+      Our dataset sources include GeoJSON and shapefiles from <a href="https://data.boston.gov">Data.Boston.gov</a>. Using Python with GeoPandas, we aligned coordinate systems, cleaned invalid geometries, and calculated densities and lengths of infrastructure per neighborhood. These metrics were then synthesized into a custom Transit Friendliness Index (TFI), accounting for sidewalk coverage and bike path density per unit of land area.
+    </p>
+  </div>
+
+  <!-- VISUALIZATION 1 -->
+  <div class="section">
+    <h2>Sidewalk and Bike Path Densities by Neighborhood</h2>
+      This bar chart shows that populated, central neighborhoods like the Leather District and Bay Village have the highest sidewalk densities, while outer areas like Hyde Park and East Boston have significantly lower infrastructure coverage. Bike path density is low overall and unevenly distributed, highlighting gaps in cycling support across Boston. This could indicate some areas that are more heavily reliant on non-public transit options, such as cars or taxis and overlap with less central neighborhoods.
+    <div class="viz">
+      <img src="Plots/density_barplot.png" alt="Bar plot of sidewalk and bike path density by neighborhood">
+    </div>
+  </div>
+
+  <!-- VISUALIZATION 2 -->
+  <div class="section">
+    <h2>Interactive Map: Sidewalk and Bike Path Infrastructure</h2>
+    <p>
+      This map provides a structural overview of Boston’s sidewalk and bike path networks. Toggle layers on or off to explore where infrastructure is concentrated and where gaps might exist. The interactive functionality helps identify priorities for transit-oriented development. One takeaway that stands out is how bike paths often serve as major arterires for passengers to flow through the city, and converge in central neighborhoods like Back Bay and Downtown, which could indicate a greater investment in transit in these areas.
+    </p>
+    <div class="viz">
+      <iframe src="Plots/infrastructure_map.html" width="100%" height="500px" style="border: none; border-radius: 8px;"></iframe>
+    </div>
+  </div>
+  
+  <!-- VISUALIZATION 3 -->
+  <div class="section">
+    <h2>Interactive Map: Walkability Scores by Neighborhood</h2>
+    <p>
+      Each Boston neighborhood is shaded based on its calculated TFI score. Hover or click to explore walkability values, view detailed metrics like average sidewalk and bike path length, and identify areas with strong or weak infrastructure support. Transit friendliness is a weighted averages of the density of sidewalk length and bike length per unit of area in a neighborhod. We weight bike paths 3 times heavier in the TFI because they can carry about 3 times more people than sidewalks per unit of length. Research on the <a href="https://www.sciencedirect.com/science/article/pii/S2352146516305403" target="_blank">'Capacity and Behaviour on One-way Cycle Tracks of Different Widths'</a> shows that one lane paths can throughput ~3500 passnegers an hour, while on sidewalks the city of New York estimates less than 1500 can fit comfortably. These estimates are highly dependent on specific infrastrcuture settings and space, so we chose a round figure to give a general sense of the carrying capacity of each path type.
+    </p>
+    <div class="viz">
+      <iframe src="Plots/walkability_score_map.html" width="100%" height="500px" style="border: none; border-radius: 8px;"></iframe>
+    </div>
+  </div>
+
+  <!-- VISUALIZATION 4 -->
+  <div class="section">
+    <h2>Transit Friendliness Index by Neighborhood</h2>
+    <p>
+      This lollipop chart ranks Boston’s neighborhoods by their Transit Friendliness Index score. Use the slider to filter neighborhoods within specific score ranges and highlight outliers with particularly high or low accessibility. One trend that the interactivity reveals is the clustering of neighborhoods with similar TFI scores. The highest scoring neighborhoods have similar ratings, after which there is a discrete drop to the second tier(Fenway, Back Bay, West End), followed by another drop. This could indicate a structural gap beteween the highest and lowest scoring neighborhoods.
+    </p>
+    <div class="viz">
+      <iframe 
+      src="Plots/altair_scatter.html" 
+      width="800" 
+      height="650" 
+      style="border: none; display: block; margin: 0 auto; border-radius: 8px;">
+      </iframe>
+    </div>
+  </div>
+
+    <!-- VISUALIZATION 5 -->
+    <div class="section">
+      <h2>Neighborhood Area vs. Transit Friendliness Index</h2>
+      <p>
+        This scatter plot compares each neighborhood's physical area to its overall TFI score. The trend suggests smaller, denser areas often rank higher in walkability, potentially due to more compact and accessible layouts. This could lead to greater reliance on automobiles in larger neighborhoods, which may have less efficient public transit access. However, the regression also exhibits heteroskedastcity, or a change in variance. There is great variance between the smallest neighborhoods, which can have high or low scores, but the largest neighborhoods tend to have lower scores. This could indicate that the largest neighborhoods are less walkable, and have less access to public transit, which is a common trend in urban planning.
+      </p>
+      <div class="viz" id="area-vs-tfi-scatter">
+        <!-- D3 will render scatterplot here -->
+      </div>
+    </div>
+
+  <!-- TAKEAWAYS -->
+  <div class="section">
+    <h2>Summary</h2>
+    <ul>
+      <li>Compact neighborhoods like the North End and Back Bay tend to score highest on the Transit Friendliness Index.</li>
+      <li>Peripheral neighborhoods often have lower sidewalk and bike path coverage, indicating potential targets for infrastructure investment.</li>
+      <li>Overlaying sidewalk, bike, and subway access helps visualize gaps and prioritize equity-focused transit planning.</li>
+    </ul>
+  </div>
+
+  <!-- CONCLUSIONS -->
+<div class="section">
+  <h2>Conclusions</h2>
+  <p>
+    The number and density of sidewalks and bike paths varies among different neighborhoods. While more populated neighborhoods in the center of Boston like Back Bay and South End have high path number and density, less populated areas like Harbor Island and East Boston have much lower path number and density.
+    This indicates there's unequal transit access and resources between the urban and rural neighborhoods in Boston.
+    Since TFI is calculated based on the density of sidewalks and bike paths, the neighborhoods with higher density values like China Town, Fenway, and Back Bay receive higher TFI scores above 0.8. On the opposite, neighborhoods like Harbor Island and East Boston receive TFI below 0.1.
+    Next, neighborhoods with larger area generally have lower TFI scores, which indicates the number and length of sidewalks and bike paths aren't proportional to the area of neighborhoods, as larger neighborhoods don't enjoy as much transit resources with respect to their larger area.
+  </p>
+  <p>
+    Access to quality transit infrastructure significantly influences urban living standards, environmental sustainability, and public health outcomes.
+    This website can be used to advocate the need for equal access in sidewalks and bike paths in rural Boston neighborhoods, which is vital since a comprehensive sidewalk and bike path network encourages active transportation, which contributes to lower vehicle dependency, reduced air pollution, and improved overall citizen health.
+    For extension, the path distribution of public bus and subway can be incorporated to the current Boston transit map, allowing analysis on the transit friendliness with two extra mode of transportation, and the TFI score can be more comprehensive by considering the density of bus and subway routes as well.
+    Strategic investment in equitable public transit infrastructure can bridge existing accessibility gaps, enhance connectivity across Boston's diverse neighborhoods, and promote healthier, more sustainable urban environments for all residents.
+  </p>
+</div>
+
+
+  <!-- REFERENCES -->
+  <div class="section">
+    <h2>References</h2>
+    <ul>
+      <li>Canesi, R. (2022). <em>Urban Policy Sustainability through a Value-Added Densification Tool</em>. <a href="https://www.mdpi.com/2071-1050/14/14/8762">[link]</a></li>
+      <li>Younes, H. et al. (2024). <em>The Traffic Calming Effect of Delineated Bicycle Lanes</em>. <a href="https://www.sciencedirect.com/science/article/pii/S2667091724000013">[link]</a></li>
+      <li><a href="https://data.boston.gov">Data.Boston.gov</a> | <a href="https://www.mass.gov/info-details/massgis-data-mbta-rapid-transit">MassGIS MBTA Data</a></li>
+      <li>Capacity and Behaviour on One-way Cycle Tracks of Different Widths. <em>Transportation Research Procedia</em>. Retrieved from: <a href="https://www.sciencedirect.com/science/article/pii/S2352146516305403\" target="_blank\">[link]</a></li>
+      <li>Pedestrian Level of Service, New York City Department of City Planning. Retrieved from: <a href="https://www.nyc.gov/site/planning/planning-level/transportation/pedestrian-level-of-service.page\" target="_blank\">[link]</a></li>  
+    </ul>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    DS4200 Final Project – Emily Nguyen, Kuan-Chun Chiu, Aadit Bhatia
+  </footer>
+
+  <!-- D3 Visualizations -->
+  <script src="website.js"></script>
+</body>
+
+</html>
