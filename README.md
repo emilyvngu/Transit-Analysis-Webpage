@@ -13,7 +13,7 @@ This repository contains the code, data, and files used to build the interactive
 
 - `index.html` – Main webpage with embedded visualizations
 - `Visualizations.ipynb` – Data cleaning and analysis (GeoPandas, Python)
-- `Plots/` – Static images of the charts
+- `Plots/` – Static images and dynamic charts
 - `Data/` – GeoJSON and SHP files
 - `website.css` / `website.js` – Styling and interactivity
 
